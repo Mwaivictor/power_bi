@@ -6,7 +6,6 @@
 **Scope:** Power BI Desktop and the Power BI Service, with notes on Report Server where behaviour differs.
 **How to read it:** the document follows the order you actually work in. Skim the table of contents, jump to what you need, and use the checklist near the end before you ship anything.
 
----
 
 ## Table of contents
 
@@ -30,7 +29,6 @@
 18. [Best practices checklist](#18-best-practices-checklist)
 19. [Appendix](#19-appendix)
 
----
 
 ## 1. Introduction
 
@@ -94,7 +92,7 @@ Two ideas are worth fixing in your head before the detail:
 - **Work moves left to right, but you revisit.** You will go back to Power Query after you start modelling, and back to the model after you start writing DAX. That loop is normal, not a sign you did it wrong.
 - **Fix problems as far left (upstream) as you can.** A wrong data type is cheapest to fix at the source, more expensive in Power Query, and most expensive once it is baked into DAX across twenty measures. The rest of this document keeps pushing work leftward for that reason.
 
----
+
 
 ## 2. Data sources
 
@@ -144,7 +142,7 @@ flowchart TD
 
 The practical rule: if the same data exists in both a file and a database, connect to the database. You gain folding, type safety, and a source that does not depend on someone remembering to run an export.
 
----
+
 
 ## 3. The ETL process
 
@@ -191,7 +189,7 @@ A rough division of labour worth memorising:
 
 Keeping each concern in its own layer is what makes a report maintainable. The rest of the document is largely an expansion of that one sentence.
 
----
+
 
 ## 4. Power Query
 
@@ -468,7 +466,6 @@ Folding continues only while every step can be expressed in the source's query l
 - **Turn off background analysis** you do not need (Options → Data Load) — column profiling on entire data set and automatic type detection both cost time on big pulls.
 - **Prefer database views** for complex joins; a view folds as one object and is easier to maintain than a long chain of merge steps.
 
----
 
 ## 5. Data cleaning
 
@@ -542,7 +539,7 @@ flowchart LR
 > [!TIP]
 > A mapping table (raw value → clean value) lives as data, so a non-developer can extend it, and it keeps your query readable. Prefer it to inline Replace steps once you have more than a handful of variants.
 
----
+
 
 ## 6. Data modelling
 
@@ -621,7 +618,6 @@ The star schema is the default for Power BI for concrete reasons, not convention
 > [!TIP]
 > When a model feels hard to write DAX against, the cause is usually the model, not the DAX. Reshaping toward a clean star fixes more problems than any formula rewrite.
 
----
 
 ## 7. Relationships
 
@@ -686,7 +682,6 @@ flowchart LR
 | Relationship line is dashed and does nothing | It is inactive | Activate it, or use `USERELATIONSHIP` in a measure |
 | Cannot build the relationship at all | Mismatched data types on the two key columns | Align types in Power Query (both text, or both whole number) |
 
----
 
 ## 8. Cardinality
 
@@ -729,7 +724,6 @@ The practical consequences:
 > [!TIP]
 > If your file is surprisingly large, open **DAX Studio → VertiPaq Analyzer** (or the model's memory view). It ranks columns by the space they consume, which is almost always a ranking by cardinality. Attack the top of that list.
 
----
 
 ## 9. Measures vs calculated columns
 
@@ -774,7 +768,6 @@ Revenue = SUMX ( Sales, Sales[Quantity] * Sales[Price] )
 > [!TIP]
 > Default to a measure. Only reach for a calculated column when you specifically need a stored, filterable, per-row value — and even then, ask whether Power Query should own it instead.
 
----
 
 ## 10. DAX
 
@@ -922,7 +915,6 @@ CALCULATE (
 - **Prefer `REMOVEFILTERS`/`KEEPFILTERS`** (modern, explicit) to bare `ALL` where clarity helps.
 - **Do not put business logic in calculated columns** that a measure should own (see [section 9](#9-measures-vs-calculated-columns)).
 
----
 
 ## 11. Date tables
 
@@ -972,7 +964,6 @@ After creating the table, right-click it → **Mark as date table**, and choose 
 
 If the business year does not start in January, add fiscal columns (fiscal year, fiscal quarter, fiscal month number) so slicers and time intelligence align to the real reporting calendar. Build the offset once in the date table and every measure inherits it.
 
----
 
 ## 12. Report design
 
@@ -1022,7 +1013,6 @@ Accessibility is a requirement in many organisations and good practice everywher
 - **Add alt text** to visuals so screen readers can describe them.
 - **Label directly** where you can, instead of forcing readers back to a legend.
 
----
 
 ## 13. Visualizations
 
@@ -1074,7 +1064,6 @@ These turn a static page into an explorable one.
 > [!TIP]
 > Design the summary page for the 80% who want the headline, and use drillthrough and tooltips for the 20% who want detail. Trying to satisfy both on one crowded page satisfies neither.
 
----
 
 ## 14. Performance optimization
 
@@ -1131,7 +1120,6 @@ Everything above compounds when the model is a clean star. Collapse snowflakes i
 - **DAX Studio** with **VertiPaq Analyzer** shows column-by-column memory use and lets you profile query plans.
 - **View Native Query** in Power Query confirms whether refresh work is folding to the source.
 
----
 
 ## 15. Publishing and the Power BI Service
 
@@ -1180,7 +1168,6 @@ For **Import** models, data is only as fresh as the last refresh. Configure a sc
 > [!TIP]
 > Treat Production as read-only. Make changes in Dev, promote through Test, and let a pipeline (or a disciplined manual process) push to Prod. Editing live reports is how "it worked yesterday" incidents happen.
 
----
 
 ## 16. Security
 
@@ -1227,7 +1214,6 @@ Control edit-versus-view through workspace roles and app audiences (see [section
 > [!WARNING]
 > RLS filters data but does **not** obfuscate measure logic or hide table structure — a determined user with the wrong access could still infer values. For truly sensitive fields, combine RLS with OLS, least-privilege sharing, and sensitivity labels rather than relying on any one control.
 
----
 
 ## 17. Common problems and how to fix them
 
@@ -1247,7 +1233,6 @@ Control edit-versus-view through workspace roles and app audiences (see [section
 > [!TIP]
 > When a number is wrong, isolate the layer before you guess. Check the raw rows in Power Query, then the relationship in model view, then the measure with a simple test visual. Most "DAX is broken" reports turn out to be a modelling or data-type issue upstream.
 
----
 
 ## 18. Best practices checklist
 
@@ -1290,7 +1275,6 @@ Run through this before you publish anything you will be judged on.
 - [ ] Access granted to security groups with least privilege
 - [ ] Version saved (PBIP for team development)
 
----
 
 ## 19. Appendix
 
@@ -1347,6 +1331,3 @@ In the **DAX/Power Query formula bar**: `Alt` + `Enter` adds a line break, and `
 - **Microsoft Learn training paths** for Power BI (free, structured, with the PL-300 certification as a goal).
 - **Power BI community forums** — https://community.fabric.microsoft.com/ for specific problems.
 
----
-
-*End of Power BI End-to-End reference.*
